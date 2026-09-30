@@ -1,3 +1,6 @@
 spring:
   application:
     name: chapter8
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
