@@ -30,6 +30,7 @@ public class CustomerController {
                 request.email(),
                 request.age()
         );
+        log.info("Customer created: id={}, name={}", id,request.name());
         return ResponseEntity
                 .created(URI.create("/api/customers/" + id))
                 .body(response);
