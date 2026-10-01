@@ -16,7 +16,8 @@ public class RegistrationController {
 
     private final AtomicLong idGenerator = new AtomicLong(0);
 
-    @PostMapping()
+    @PostMapping(consumes = "application/json",
+            produces = "application/json")
     ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterUserRequest request) {
         Long id = idGenerator.incrementAndGet();
         UserResponse response = new UserResponse(
