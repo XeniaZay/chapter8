@@ -1,5 +1,7 @@
 package com.example.dataformat.common;
 
+import com.example.dataformat.domainerrors.AccountClosedException;
+import com.example.dataformat.domainerrors.InsufficientFundsException;
 import com.example.dataformat.problem.UserNotFoundException;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
@@ -53,6 +55,24 @@ public class GlobalExceptionHandler {
                 .toList();
 
         problem.setProperty("violations", violations);
+        return problem;
+    }
+
+    @ExceptionHandler(AccountClosedException.class)
+    ProblemDetail validation(AccountClosedException ex) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problem.setTitle("Account is closed");
+        problem.setDetail(ex.getMessage());
+        problem.setProperty("code", "ACC_CLOSED");
+        return problem;
+    }
+
+    @ExceptionHandler(InsufficientFundsException.class)
+    ProblemDetail validation(InsufficientFundsException ex) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+        problem.setTitle("Insufficient funds");
+        problem.setDetail(ex.getMessage());
+        problem.setProperty("code", "PAY_INSUFFICIENT_FUNDS");
         return problem;
     }
 }
