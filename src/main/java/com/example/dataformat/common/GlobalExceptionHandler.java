@@ -3,16 +3,19 @@ package com.example.dataformat.common;
 import com.example.dataformat.domainerrors.AccountClosedException;
 import com.example.dataformat.domainerrors.InsufficientFundsException;
 import com.example.dataformat.problem.UserNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.net.URI;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -73,6 +76,22 @@ public class GlobalExceptionHandler {
         problem.setTitle("Insufficient funds");
         problem.setDetail(ex.getMessage());
         problem.setProperty("code", "PAY_INSUFFICIENT_FUNDS");
+        return problem;
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    ProblemDetail handleNotAcceptable(HttpMediaTypeNotAcceptableException ex,
+                                      HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_ACCEPTABLE,
+                "Requested media type is not supported"
+        );
+        problem.setTitle("Not Acceptable");
+        problem.setType(URI.create("https://api.example.com/problems/not-acceptable"));
+        problem.setInstance(URI.create(request.getRequestURI()));
+        problem.setProperty("code", "NOT_ACCEPTABLE");
+        problem.setProperty("supported", List.of("application/json", "application/xml"));
+        problem.setProperty("timestamp", Instant.now().toString());
         return problem;
     }
 }
